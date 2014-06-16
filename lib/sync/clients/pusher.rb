@@ -1,12 +1,14 @@
 module Sync
   module Clients
     class Pusher
-
       def setup
         require 'pusher'
         ::Pusher.app_id = Sync.app_id
         ::Pusher.key    = Sync.api_key
         ::Pusher.secret = Sync.auth_token
+        ::Pusher.scheme = Sync.scheme || 'http'
+        ::Pusher.host   = Sync.host || 'api.pusherapp.com'
+        ::Pusher.port   = Sync.port || 80
       end
 
       def batch_publish(*args)

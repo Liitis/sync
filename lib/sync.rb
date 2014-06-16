@@ -95,6 +95,22 @@ module Sync
       config[:api_key]
     end
 
+    def scheme
+      config[:scheme]
+    end
+
+    def host
+      config[:host]
+    end
+
+    def port
+      config[:port]
+    end
+
+    def cluster
+      config[:cluster] || 'us-east'
+    end
+
     def reactor
       @reactor ||= Reactor.new
     end
@@ -108,7 +124,7 @@ module Sync
         extensions: [FayeExtension.new]
       }.merge(options))
     end
-    
+
     def views_root
       Rails.root.join('app', 'views', 'sync')
     end
