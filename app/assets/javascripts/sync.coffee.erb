@@ -1,11 +1,12 @@
 $ = jQuery
 
-@Sync = 
-  
+@Sync =
+
   ready: false
   readyQueue: []
   FAYE_HOST: "<%= Sync.server %>"
   PUSHER_API_KEY: "<%= Sync.api_key %>"
+  PUSHER_CLUSTER: "<%= Sync.cluster %>"
   CLIENT_ADAPTER: "<%= Sync.adapter %>"
 
   init: ->
@@ -42,7 +43,7 @@ $ = jQuery
       @readyQueue.push callback
 
 
-  flushReadyQueue: -> 
+  flushReadyQueue: ->
     @onReady(callback) for callback in @readyQueue
     @readyQueue = []
 
@@ -82,7 +83,7 @@ class Sync.Faye
 
   isConnected: -> @client?.getState() is "CONNECTED"
 
-  subscribe: (channel, callback) -> 
+  subscribe: (channel, callback) ->
     subscription = new Sync.Faye.Subscription(@client, channel, callback)
     @subscriptions.push(subscription)
     subscription
@@ -95,11 +96,11 @@ class Sync.Faye
 class Sync.Faye.Subscription
   constructor: (@client, channel, callback) ->
     @fayeSub = @client.subscribe channel, callback
-    
+
   cancel: ->
     @fayeSub.cancel()
-    
-    
+
+
 class Sync.Pusher
 
   subscriptions: []
@@ -110,7 +111,7 @@ class Sync.Pusher
 
   isConnected: -> @client?.connection.state is "connected"
 
-  subscribe: (channel, callback) -> 
+  subscribe: (channel, callback) ->
     subscription = new Sync.Pusher.Subscription(@client, channel, callback)
     @subscriptions.push(subscription)
     subscription
@@ -120,20 +121,20 @@ class Sync.Pusher
     @subscriptions = []
 
 
-    
+
 class Sync.Pusher.Subscription
   constructor: (@client, channel, callback) ->
     @pusherSub = channel
-    
+
     channel = @client.subscribe(channel)
     channel.bind 'sync', callback
-    
+
   cancel: ->
     @client.unsubscribe(@pusherSub) if @client.channel(@pusherSub)?
 
 
 class Sync.View
-  
+
   removed: false
 
   constructor: (@$el, @name) ->
@@ -141,7 +142,7 @@ class Sync.View
   beforeUpdate: (html, data) -> @update(html)
 
   afterUpdate: -> #noop
-  
+
   beforeInsert: ($el, data) -> @insert($el)
 
   afterInsert: -> #noop
@@ -163,7 +164,7 @@ class Sync.View
 
   show: -> @$el.show()
 
-  update: (html) -> 
+  update: (html) ->
     $new = $($.trim(html))
     @$el.replaceWith($new)
     @$el = $new
@@ -171,7 +172,7 @@ class Sync.View
     @bind()
 
 
-  insert: ($el) -> 
+  insert: ($el) ->
     @$el.replaceWith($el)
     @$el = $el
     @afterInsert()
@@ -226,10 +227,10 @@ class Sync.Partial
 
     @subscriptionDestroy = @adapter.subscribe @channelDestroy, => @remove()
 
-  
+
   update: (html) -> @view.beforeUpdate(html, {})
 
-  remove: -> 
+  remove: ->
     @view.beforeRemove()
     @destroy() if @view.isRemoved()
 
