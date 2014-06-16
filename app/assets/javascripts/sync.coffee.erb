@@ -105,7 +105,7 @@ class Sync.Pusher
   subscriptions: []
 
   connect: ->
-    @client = new window.Pusher(Sync.PUSHER_API_KEY)
+    @client = new window.Pusher(Sync.PUSHER_API_KEY, cluster: Sync.PUSHER_CLUSTER)
 
 
   isConnected: -> @client?.connection.state is "connected"
